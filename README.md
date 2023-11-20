@@ -52,6 +52,9 @@ We should have something like this:
 	stepView.stepsDrawable(orderTrackerIcons)
 ```
 
+Example usecase (Order tracking steps with icons)
+![Screenshot](https://github.com/malcolmmaima/StepView/assets/3639153/7e1556a7-b03d-4d70-8230-71305e0b2de6)
+
 Or Specify numbers of steps so that only circles with step number are shown:
 
 ```xml
