@@ -5,10 +5,10 @@ A simple animated step view for Android. Backward and forward animations is supp
 
 Usage
 -----
+1. Add `implementation project(':StepView')'` to your dependencies.
+2. Add `StepView` into your layouts or view hierarchy.
 
-1. Add mavenCentral() to repositories block in your gradle file.
-2. Add `implementation 'com.github.malcolmmaima:stepview:1.5.2'` to your dependencies.
-3. Add `StepView` into your layouts or view hierarchy.
+Setup article: https://malcolmmaima.medium.com/android-setting-up-stepview-with-icon-support-a-technical-guide-c9d65433052d
 
 Supported animations:
 
@@ -70,7 +70,7 @@ Or Specify numbers of steps so that only circles with step number are shown:
 Styling:
 
 ```xml
-<com.malcolmmaima.stepview.StepView
+<com.shuhart.stepview.StepView
 	android:id="@+id/step_view"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
