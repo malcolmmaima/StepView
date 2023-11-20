@@ -70,7 +70,7 @@ Or Specify numbers of steps so that only circles with step number are shown:
 Styling:
 
 ```xml
-<com.shuhart.stepview.StepView
+<com.malcolmmaima.stepview.StepView
 	android:id="@+id/step_view"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
