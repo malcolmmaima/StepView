@@ -33,6 +33,24 @@ Specify steps with xml attribute:
 	stepView.setSteps(List<String> steps);
 ```
 
+Specify icon steps corresponding to the above steps list:
+```val orderTrackerIcons = listOf(
+    com.myapp.main.R.drawable.ic_received,
+    com.myapp.main.R.drawable.ic_processing,
+    com.myapp.main.R.drawable.ic_dispatched,
+    com.myapp.main.R.drawable.ic_delivered
+)
+```
+```java
+	stepView.stepsDrawable(orderTrackerIcons);
+```
+
+We should have something like this:
+```java
+	stepView.steps(orderTrackerStatuses)
+    stepView.stepsDrawable(orderTrackerIcons)
+```
+
 Or Specify numbers of steps so that only circles with step number are shown:
 
 ```xml

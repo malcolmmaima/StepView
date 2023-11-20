@@ -26,12 +26,16 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.shuhart.stepview.animation.AnimatorListener;
+import com.kyosk.app.duka.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Added icon support to the original StepView by Bogdan Kornev.
+ */
 
 public class StepView extends View {
 
@@ -70,6 +74,7 @@ public class StepView extends View {
     @DisplayMode
     private int displayMode = DISPLAY_MODE_WITH_TEXT;
     private List<String> steps = new ArrayList<>();
+    private List<Integer> stepsDrawable = new ArrayList<>();
     // for display mode DISPLAY_MODE_NO_TEXT
     private int stepsNumber = 0;
     private int currentStep = START_STEP;
@@ -208,7 +213,12 @@ public class StepView extends View {
                     steps.add("Step 2");
                     steps.add("Step 3");
                 }
-                setSteps(steps);
+                if(stepsDrawable.isEmpty()){
+                    stepsDrawable.add(R.drawable.ic_check_circle_black_24dp);
+                    stepsDrawable.add(R.drawable.ic_check_circle_black_24dp);
+                    stepsDrawable.add(R.drawable.ic_check_circle_black_24dp);
+                }
+                setSteps(steps, stepsDrawable);
             } else {
                 if (stepsNumber == 0) {
                     stepsNumber = 4;
@@ -249,11 +259,13 @@ public class StepView extends View {
         onStepClickListener = listener;
     }
 
-    public void setSteps(List<String> steps) {
+    public void setSteps(List<String> steps, List<Integer> stepDrawables) {
         stepsNumber = 0;
         displayMode = DISPLAY_MODE_WITH_TEXT;
         this.steps.clear();
+        this.stepsDrawable.clear();
         this.steps.addAll(steps);
+        this.stepsDrawable.addAll(stepDrawables);
         requestLayout();
         go(START_STEP, false);
     }
@@ -314,13 +326,22 @@ public class StepView extends View {
                 invalidate();
             }
         });
-        animator.addListener(new AnimatorListener() {
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+
             @Override
             public void onAnimationEnd(Animator animator) {
                 state = IDLE;
                 currentStep = step;
                 invalidate();
             }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
         });
         animator.setDuration(animationDuration);
         animator.start();
@@ -433,6 +454,21 @@ public class StepView extends View {
     private int measureStepsHeight() {
         textLayouts = new StaticLayout[steps.size()];
         textPaint.setTextSize(textSize);
+
+        // fixed flaky rendering of steps being rendered vertically.
+        // set minimum to (max phone resolution / steps size) incase getMeasuredWidth() doesn't give resolution back in time
+        int calculatedWidth = getMeasuredWidth() / steps.size();
+        int defaultWidth = 1440 / steps.size();
+        int layoutWidth;
+
+        if (calculatedWidth > 0) {
+            // Use getMeasuredWidth() / steps.size() if it's greater than 0
+            layoutWidth = calculatedWidth;
+        } else {
+            // Use the default width (1440 / steps.size()) if getMeasuredWidth() / steps.size() is 0
+            layoutWidth = defaultWidth;
+        }
+
         int max = 0;
         for (int i = 0; i < steps.size(); i++) {
             String text = steps.get(i);
@@ -441,7 +477,7 @@ public class StepView extends View {
             textLayouts[i] = new StaticLayout(
                     text,
                     textPaint,
-                    getMeasuredWidth() / steps.size(),
+                    layoutWidth,
                     alignment,
                     1,
                     0,
@@ -455,7 +491,7 @@ public class StepView extends View {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private boolean isRtl() {
-        return ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL;
+        return ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL;
     }
 
     private void measureAttributes() {
@@ -664,11 +700,12 @@ public class StepView extends View {
 
             paint.setColor(selectedStepNumberColor);
             paint.setTextSize(stepNumberTextSize);
-            drawNumber(canvas, number, circleCenterX, paint);
+            //drawNumber(canvas, number, circleCenterX, paint);
 
             textPaint.setTextSize(textSize);
             textPaint.setColor(selectedTextColor);
             drawText(canvas, text, textY, step);
+            drawCustomDrawable(canvas, circleCenterX, circleCenterY, stepsDrawable.get(step));
         } else if (isDone) {
             paint.setColor(doneCircleColor);
             canvas.drawCircle(circleCenterX, circleCenterY, doneCircleRadius, paint);
@@ -707,16 +744,19 @@ public class StepView extends View {
                         int alpha = (int) (animatedFraction * 255);
                         paint.setAlpha(alpha);
                         paint.setTextSize(stepNumberTextSize * animatedFraction);
-                        drawNumber(canvas, number, circleCenterX, paint);
+                        //drawNumber(canvas, number, circleCenterX, paint);
+                        drawCustomDrawable(canvas, circleCenterX, circleCenterY, stepsDrawable.get(step));
                     } else {
                         paint.setTextSize(stepNumberTextSize);
                         paint.setColor(nextTextColor);
-                        drawNumber(canvas, number, circleCenterX, paint);
+                        //drawNumber(canvas, number, circleCenterX, paint);
+                        drawCustomDrawable(canvas, circleCenterX, circleCenterY, stepsDrawable.get(step));
                     }
                 } else {
                     paint.setTextSize(stepNumberTextSize);
                     paint.setColor(nextTextColor);
-                    drawNumber(canvas, number, circleCenterX, paint);
+                    //drawNumber(canvas, number, circleCenterX, paint);
+                    drawCustomDrawable(canvas, circleCenterX, circleCenterY, stepsDrawable.get(step));
                 }
 
                 textPaint.setTextSize(textSize);
@@ -733,7 +773,8 @@ public class StepView extends View {
                 paint.setColor(nextTextColor);
 
                 paint.setTextSize(stepNumberTextSize);
-                drawNumber(canvas, number, circleCenterX, paint);
+                //drawNumber(canvas, number, circleCenterX, paint);
+                drawCustomDrawable(canvas, circleCenterX, circleCenterY, stepsDrawable.get(step));
 
                 textPaint.setTextSize(textSize);
                 textPaint.setColor(nextTextColor);
@@ -780,6 +821,17 @@ public class StepView extends View {
                 bounds.top + 0.75f * width, paint);
     }
 
+    // draw custom drawables e.g. when I pass R.drawable.ic_about, make sure to draw it
+    private void drawCustomDrawable(Canvas canvas, int circleCenterX, int circleCenterY, int drawable) {
+        Drawable imageDrawable = getResources().getDrawable(drawable);
+        imageDrawable.setBounds(
+                circleCenterX - (int) (selectedCircleRadius * 0.5f),
+                circleCenterY - (int) (selectedCircleRadius * 0.5f),
+                circleCenterX + (int) (selectedCircleRadius * 0.5f),
+                circleCenterY + (int) (selectedCircleRadius * 0.5f));
+        imageDrawable.draw(canvas);
+    }
+
     private void drawLine(Canvas canvas, int startX, int endX, int centerY, boolean highlight) {
         if (highlight) {
             paint.setColor(doneStepLineColor);
@@ -794,6 +846,7 @@ public class StepView extends View {
 
     public class State {
         private List<String> steps;
+        private List<Integer> stepsDrawable;
         private int stepsNumber;
         @AnimationType
         private int animationType = StepView.this.animationType;
@@ -930,6 +983,11 @@ public class StepView extends View {
             return this;
         }
 
+        public State stepsDrawable(List<Integer> stepsDrawable) {
+            this.stepsDrawable = stepsDrawable;
+            return this;
+        }
+
         public State stepsNumber(int stepsNumber) {
             this.stepsNumber = stepsNumber;
             return this;
@@ -972,8 +1030,8 @@ public class StepView extends View {
             setTypeface(typeface);
             StepView.this.nextStepCircleEnabled = nextStepCircleEnabled;
             StepView.this.nextStepCircleColor = nextStepCircleColor;
-            if (steps != null && !StepView.this.steps.equals(steps)) {
-                StepView.this.setSteps(steps);
+            if (steps != null && stepsDrawable != null && !StepView.this.steps.equals(steps)) {
+                StepView.this.setSteps(steps, stepsDrawable);
             } else if (stepsNumber != 0 && stepsNumber != StepView.this.stepsNumber) {
                 StepView.this.setStepsNumber(stepsNumber);
             } else {
