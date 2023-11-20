@@ -34,7 +34,8 @@ Specify steps with xml attribute:
 ```
 
 Specify icon steps corresponding to the above steps list:
-```val orderTrackerIcons = listOf(
+```
+val orderTrackerIcons = listOf(
     com.myapp.main.R.drawable.ic_received,
     com.myapp.main.R.drawable.ic_processing,
     com.myapp.main.R.drawable.ic_dispatched,
@@ -48,7 +49,7 @@ Specify icon steps corresponding to the above steps list:
 We should have something like this:
 ```java
 	stepView.steps(orderTrackerStatuses)
-    stepView.stepsDrawable(orderTrackerIcons)
+	stepView.stepsDrawable(orderTrackerIcons)
 ```
 
 Or Specify numbers of steps so that only circles with step number are shown:
@@ -100,14 +101,9 @@ or instantiate and setup it in runtime with handy state builder:
             .selectedStepNumberColor(ContextCompat.getColor(this, R.color.colorPrimary))
             // You should specify only stepsNumber or steps array of strings.
             // In case you specify both steps array is chosen.
-            .steps(new ArrayList<String>() {{
-                add("First step");
-                add("Second step");
-                add("Third step");
-            }})
-            // You should specify only steps number or steps array of strings.
-            // In case you specify both steps array is chosen.
-            .stepsNumber(4)
+            // Steps and StepsDrawable should be of the same size
+            .steps(orderTrackerStatuses)
+            .stepsDrawable(orderTrackerIcons)
             .animationDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
             .stepLineWidth(getResources().getDimensionPixelSize(R.dimen.dp1))
             .textSize(getResources().getDimensionPixelSize(R.dimen.sp14))
