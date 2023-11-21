@@ -142,10 +142,8 @@ You can set a step click listener:
     });
 ```
 
-See the sample for additional details.
-
 If you want a custom typeface you should add font files to the resource folder "font" and reference any in xml layout.
-Alternatively you can specify typeface using the state builder in your code. Look into the sample for additional details on that.
+Alternatively you can specify typeface using the state builder in your code.
 
 You can enable view to draw remained step circles with a specified color.
 In xml:
